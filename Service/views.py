@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 
 from Management.controller import Controller, Service
@@ -5,10 +7,12 @@ from Management.controller import Controller, Service
 
 def request_on(request):
     controller = Controller()
-    room_id = eval(request.POST.get('roomId'))
-    mode = eval(request.POST.get('mode'))
+    data = json.loads(request.body)
+    print(data.get('mode'))
+    room_id = data.get('roomId')
+    mode = data.get('mode')
     target_temp = controller.settings['defaultTargetTemp']
-    controller.update_room_temp(room_id, eval(request.POST.get('currentRoomTemp')))
+    controller.update_room_temp(room_id, data.get('currentRoomTemp'))
     service = Service(room_id=room_id, mode=mode, target_temp=target_temp)
     result = controller.request_on(service)
 
@@ -28,9 +32,9 @@ def request_on(request):
 
 def change_target_temp(request):
     controller = Controller()
-
-    room_id = eval(request.POST.get('roomId'))
-    target_temp = eval(request.POST.get('targetTemp'))
+    data = json.loads(request.body)
+    room_id = data.get('roomId')
+    target_temp = data.get('targetTemp')
     controller.change_target_temp(room_id, target_temp)
     controller.print_log()
     return JsonResponse({'msg': 'OK'})
@@ -38,9 +42,10 @@ def change_target_temp(request):
 
 def change_fan_speed(request):
     controller = Controller()
+    data = json.loads(request.body)
 
-    room_id = eval(request.POST.get('roomId'))
-    fan_speed = eval(request.POST.get("fanSpeed"))
+    room_id = data.get('roomId')
+    fan_speed = data.get("fanSpeed")
     controller.change_fan_speed(room_id, fan_speed)
 
     if fan_speed == 1:
@@ -58,7 +63,9 @@ def change_fan_speed(request):
 
 def request_off(request):
     controller = Controller()
-    room_id = eval(request.POST.get('roomId'))
+    data = json.loads(request.body)
+
+    room_id = data.get('roomId')
     controller.request_off(room_id)
     controller.print_log()
     return JsonResponse({'msg': 'OK'})
@@ -74,9 +81,11 @@ def request_info(request):
         - "大于4"： 正在回温度
     """
     controller = Controller()
-    room_id = eval(request.POST.get('roomId'))
-    statue = eval(request.POST.get('statue'))
-    current_temp = eval(request.POST.get('currentTemp'))
+    data = json.loads(request.body)
+
+    room_id = data.get('roomId')
+    statue = data.get('statue')
+    current_temp = data.get('currentTemp')
     controller.update_room_temp(room_id, current_temp)
     if statue == 3:
         controller.pause_service(room_id)
