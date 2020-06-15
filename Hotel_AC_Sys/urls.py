@@ -15,7 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+import Service.views as service_views
+import Management.views as management_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('service/PowerOn/', management_views.power_on),
+    path('service/RequestOn/', service_views.request_on),
+    path('service/ChangeTargetTemp/', service_views.change_target_temp),
+    path('service/ChangeFanSpeed/', service_views.change_fan_speed),
+    path('service/RequestOff/', service_views.request_off),
+    path('service/CheckRoomState/', management_views.check_room_state),
+    path('room/Request/', service_views.request_info),
+    path('front_desk/CheckRDR', management_views.check_RDR),
+    path('front_desk/CheckBill', management_views.check_bill),
+    path('manager/CheckReport', management_views.check_report),
+    path('service/Request/', service_views.request_info),
 ]
