@@ -54,7 +54,6 @@ def check_bill(request):
 
 
 def check_report(request):
-    print(type(request.POST.get('date')))
     date = datetime.strptime(request.POST.get('date'), "%Y-%m-%d")
     report_type = eval(request.POST.get('typeReport'))
     controller = Controller()
