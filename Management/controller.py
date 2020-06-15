@@ -594,7 +594,7 @@ class Controller:
     def get_report(self, date, report_type):
         report = []
         if report_type == 0:
-            for i in len(self.room_state):
+            for i in range(len(self.room_state)):
                 report.append({
                     'roomId': i,
                     'timesOfOnOff': self.room_state[i]['timesOfOnOff'],
@@ -619,7 +619,7 @@ class Controller:
                     'timesOfChangeFanSpeed': self.room_state[i]['timesOfChangeFanSpeed']
                 })
         elif report_type == 2:
-            for i in len(self.room_state):
+            for i in range(len(self.room_state)):
                 report.append({
                     'roomId': i,
                     'timesOfOnOff': self.room_state[i]['timesOfOnOff'],
@@ -631,7 +631,7 @@ class Controller:
                     'timesOfChangeFanSpeed': self.room_state[i]['timesOfChangeFanSpeed']
                 })
         elif report_type == 3:
-            for i in len(self.room_state):
+            for i in range(len(self.room_state)):
                 report.append({
                     'roomId': i,
                     'timesOfOnOff': self.room_state[i]['timesOfOnOff'],
