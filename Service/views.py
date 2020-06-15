@@ -67,7 +67,7 @@ def request_off(request):
     room_id = data.get('roomId')
     controller.request_off(room_id)
     controller.print_log()
-    return JsonResponse({'msg': 'OK'})
+    return JsonResponse({'fee': controller.get_room_fee(room_id)})
 
 
 def request_info(request):
