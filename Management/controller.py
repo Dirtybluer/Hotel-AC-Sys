@@ -1,8 +1,8 @@
 import datetime
-
 import logging
 
 from Service.models import Service as ServiceModel
+from django.utils.timezone import get_current_timezone
 
 
 def singleton(ctrl):
@@ -265,9 +265,9 @@ class Controller:
 
         if target_mode == self.TIME_SLICE_MODE:
             for service in self.active_services:
-                service.time_slice_begin_time = datetime.datetime.now()
+                service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
             for service in self.waiting_services:
-                service.time_slice_begin_time = datetime.datetime.now()
+                service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
         else:
             for service in self.active_services:
                 service.time_slice_begin_time = -1
@@ -284,22 +284,22 @@ class Controller:
 
         dispatch_mode = self._get_dispatch_mode()
         if dispatch_mode == self.TIME_SLICE_MODE:
-            active_service.time_slice_begin_time = datetime.datetime.now()
-            waiting_service.time_slice_begin_time = datetime.datetime.now()
+            active_service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
+            waiting_service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
 
-        active_service.service_finish_time = datetime.datetime.now()
+        active_service.service_finish_time = datetime.datetime.now(tz=get_current_timezone())
         active_service.save2db()
         self.room_state[active_service.room_id]['duration'] += active_service.get_duration()
         self.room_state[active_service.room_id]['fee'] += active_service.get_fee()
         self.active_services.remove(active_service)
         active_service.service_begin_time = -1
-        active_service.waiting_service = datetime.datetime.now()
+        active_service.waiting_service = datetime.datetime.now(tz=get_current_timezone())
         self.waiting_services.append(active_service)
         self.room_state[active_service.room_id]['timesOfDispatch'] += 1
         self.room_state[active_service.room_id]['AC_status'] = 1
 
         self.waiting_services.remove(waiting_service)
-        waiting_service.service_begin_time = datetime.datetime.now()
+        waiting_service.service_begin_time = datetime.datetime.now(tz=get_current_timezone())
         waiting_service.waiting_begin_time = -1
         self.active_services.append(waiting_service)
         self.room_state[waiting_service.room_id]['timesOfDispatch'] += 1
@@ -326,7 +326,7 @@ class Controller:
         if len(self.active_services) < controller.settings['serviceLimit']:
             self.waiting_services.remove(alter_service)
             alter_service.waiting_begin_time = -1
-            alter_service.service_begin_time = datetime.datetime.now()
+            alter_service.service_begin_time = datetime.datetime.now(tz=get_current_timezone())
             self.active_services.append(alter_service)
             self.room_state[alter_service.room_id]['timesOfDispatch'] += 1
             self.room_state[alter_service.room_id]['AC_status'] = 2
@@ -375,8 +375,8 @@ class Controller:
                 alter_service = self._get_waiting_service(alter_service.room_id)
                 if len(self.active_services) < controller.settings['serviceLimit']:
                     self.waiting_services.remove(alter_service)
-                    alter_service.time_slice_begin_time = datetime.datetime.now()
-                    alter_service.service_begin_time = datetime.datetime.now()
+                    alter_service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
+                    alter_service.service_begin_time = datetime.datetime.now(tz=get_current_timezone())
                     alter_service.waiting_begin_time = -1
                     self.active_services.append(alter_service)
                     self.room_state[alter_service.room_id]['timesOfDispatch'] += 1
@@ -414,9 +414,9 @@ class Controller:
         self.room_state[service.room_id]['timesOfOnOff'] += 1
 
         dispatch_mode = self._get_dispatch_mode()
-        service.waiting_begin_time = datetime.datetime.now()
+        service.waiting_begin_time = datetime.datetime.now(tz=get_current_timezone())
         if dispatch_mode == self.TIME_SLICE_MODE:
-            service.time_slice_begin_time = datetime.datetime.now()
+            service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
         self.waiting_services.append(service)
         self.room_state[service.room_id]['AC_status'] = 1
 
@@ -461,9 +461,9 @@ class Controller:
         if service in self.active_services:
             self.room_state[room_id]['fee'] += service.get_fee()
             self.room_state[room_id]['duration'] += service.get_duration()
-            service.service_finish_time = datetime.datetime.now()
+            service.service_finish_time = datetime.datetime.now(tz=get_current_timezone())
             service.save2db()
-            service.service_begin_time = datetime.datetime.now()
+            service.service_begin_time = datetime.datetime.now(tz=get_current_timezone())
 
         if service not in self.sleeping_services:
             self._dispatch()
@@ -475,7 +475,7 @@ class Controller:
             self.waiting_services.remove(service)
         elif service in self.active_services:
             self.active_services.remove(service)
-            service.service_finish_time = datetime.datetime.now()
+            service.service_finish_time = datetime.datetime.now(tz=get_current_timezone())
             service.save2db()
             self._dispatch()
         elif service in self.sleeping_services:
@@ -497,7 +497,7 @@ class Controller:
         if service in self.active_services:
             self.room_state[room_id]['fee'] += service.get_fee()
             self.room_state[room_id]['duration'] += service.get_duration()
-            service.service_finish_time = datetime.datetime.now()
+            service.service_finish_time = datetime.datetime.now(tz=get_current_timezone())
             service.save2db()
             self.active_services.remove(service)
             self._dispatch()
@@ -512,10 +512,10 @@ class Controller:
         service = self._get_service(room_id)
         self.sleeping_services.remove(service)
         service.service_begin_time = -1
-        service.waiting_begin_time = datetime.datetime.now()
+        service.waiting_begin_time = datetime.datetime.now(tz=get_current_timezone())
         dispatch_mode = self._get_dispatch_mode()
         if dispatch_mode == self.TIME_SLICE_MODE:
-            service.time_slice_begin_time = datetime.datetime.now()
+            service.time_slice_begin_time = datetime.datetime.now(tz=get_current_timezone())
 
         self.waiting_services.append(service)
         self.room_state[service.room_id]['timesOfDispatch'] += 1
@@ -574,7 +574,7 @@ class Controller:
             DRD.append({
                 'num': service.id,
                 'roomId': service.room_id,
-                'requestTime': (service.request_time+datetime.timedelta(hours=8)).strftime('%H:%M'),
+                'requestTime': (service.request_time + datetime.timedelta(hours=8)).strftime('%H:%M'),
                 'requestDuration': service.request_duration,
                 'fanSpeed': service.fan_speed,
                 'feeRate': service.fee_rate,
@@ -678,10 +678,10 @@ class Service:
         """
         if self.service_begin_time == -1:
             raise RuntimeError('Not in the service queue')
-        return (datetime.datetime.now() - self.service_begin_time).seconds
+        return (datetime.datetime.now(tz=get_current_timezone()) - self.service_begin_time).seconds
 
     def get_ts_duration(self):
-        return (datetime.datetime.now() - self.time_slice_begin_time).seconds
+        return (datetime.datetime.now(tz=get_current_timezone()) - self.time_slice_begin_time).seconds
 
     def get_fee(self):
         return round(self.get_duration() * self.fee_rate / 60, 2)

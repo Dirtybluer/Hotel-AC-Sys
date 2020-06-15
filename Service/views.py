@@ -8,7 +8,6 @@ from Management.controller import Controller, Service
 def request_on(request):
     controller = Controller()
     data = json.loads(request.body)
-    print(data.get('mode'))
     room_id = data.get('roomId')
     mode = data.get('mode')
     target_temp = controller.settings['defaultTargetTemp']
