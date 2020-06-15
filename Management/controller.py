@@ -181,7 +181,7 @@ class Controller:
         elif self._get_waiting_service(room_id) is not None:
             return self._get_waiting_service(room_id)
         elif self._get_sleeping_service(room_id) is not None:
-            return self._get_waiting_service(room_id)
+            return self._get_sleeping_service(room_id)
         else:
             raise RuntimeError('Service not found')
 
@@ -474,6 +474,8 @@ class Controller:
         if service in self.waiting_services:
             self.waiting_services.remove(service)
         elif service in self.active_services:
+            self.room_state[room_id]['fee'] += service.get_fee()
+            self.room_state[room_id]['duration'] += service.get_duration()
             self.active_services.remove(service)
             service.service_finish_time = datetime.datetime.now(tz=get_current_timezone())
             service.save2db()
@@ -492,7 +494,7 @@ class Controller:
         service = self._get_service(room_id)
         self.sleeping_services.append(service)
         self.room_state[service.room_id]['timesOfDispatch'] += 1
-        self.room_state[room_id]['AC_status'] = 4
+        self.room_state[room_id]['AC_status'] = 5
 
         if service in self.active_services:
             self.room_state[room_id]['fee'] += service.get_fee()
@@ -510,6 +512,8 @@ class Controller:
         将服务从睡眠队列中取出，重置 time，fee，放入等待队列，尝试调度
         """
         service = self._get_service(room_id)
+        print(service.room_id)
+        print(service in self.sleeping_services)
         self.sleeping_services.remove(service)
         service.service_begin_time = -1
         service.waiting_begin_time = datetime.datetime.now(tz=get_current_timezone())

@@ -81,10 +81,10 @@ def request_info(request):
     """
     controller = Controller()
     data = json.loads(request.body)
-
     room_id = data.get('roomId')
     statue = data.get('statue')
     current_temp = data.get('currentTemp')
+    controller.print_log() 
     controller.update_room_temp(room_id, current_temp)
     if statue == 3:
         controller.pause_service(room_id)
