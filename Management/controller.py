@@ -510,6 +510,8 @@ class Controller:
         将服务从睡眠队列中取出，重置 time，fee，放入等待队列，尝试调度
         """
         service = self._get_service(room_id)
+        print(service.room_id)
+        print(service in self.sleeping_services)
         self.sleeping_services.remove(service)
         service.service_begin_time = -1
         service.waiting_begin_time = datetime.datetime.now(tz=get_current_timezone())
