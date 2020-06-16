@@ -570,9 +570,9 @@ class Controller:
         return room_state
 
     @staticmethod
-    def get_DRD(date_in, date_out):
+    def get_DRD(date_in, date_out, room_id):
         services = ServiceModel.objects.filter(request_time__gte=date_in) \
-            .filter(finish_time__lte=date_out).order_by('request_time')
+            .filter(finish_time__lte=date_out).filter(room_id=room_id).order_by('request_time')
         DRD = []
         for service in services:
             DRD.append({
@@ -587,10 +587,10 @@ class Controller:
         return DRD
 
     @staticmethod
-    def get_bill(date_in, date_out):
+    def get_bill(date_in, date_out, room_id):
         total_fee = 0
         services = ServiceModel.objects.filter(request_time__gte=date_in) \
-            .filter(finish_time__lte=date_out).order_by('request_time')
+            .filter(finish_time__lte=date_out).filter(room_id=room_id).order_by('request_time')
         for service in services:
             total_fee += service.fee
         return total_fee

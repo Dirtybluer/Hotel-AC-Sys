@@ -27,10 +27,11 @@ def check_room_state(request):
 
 def check_RDR(request):
     controller = Controller()
+    room_id = eval(request.POST.get('roomId'))
     date_in = datetime.strptime(request.POST.get('dateIn'), "%Y-%m-%d %H:%M")
     date_out = datetime.strptime(request.POST.get('dateOut'), "%Y-%m-%d %H:%M")
 
-    DRD = controller.get_DRD(date_in, date_out)
+    DRD = controller.get_DRD(date_in, date_out, room_id)
     controller.print_log()
     return JsonResponse(DRD, safe=False)
 
@@ -41,7 +42,7 @@ def check_bill(request):
     date_out = datetime.strptime(request.POST.get('dateOut'), "%Y-%m-%d %H:%M")
 
     controller = Controller()
-    total_fee = controller.get_bill(date_in, date_out)
+    total_fee = controller.get_bill(date_in, date_out, room_id)
 
     controller.print_log()
 
