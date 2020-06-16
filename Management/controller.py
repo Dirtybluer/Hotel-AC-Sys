@@ -574,9 +574,9 @@ class Controller:
         services = ServiceModel.objects.filter(request_time__gte=date_in) \
             .filter(finish_time__lte=date_out).filter(room_id=room_id).order_by('request_time')
         DRD = []
-        for service in services:
+        for index, service in enumerate(services):
             DRD.append({
-                'num': service.id,
+                'num': index+1,
                 'roomId': service.room_id,
                 'requestTime': (service.request_time + datetime.timedelta(hours=8)).strftime('%H:%M'),
                 'requestDuration': service.request_duration,
